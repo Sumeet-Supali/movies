@@ -30,7 +30,7 @@ movies = pd.DataFrame(movies_dict)
 
 tfidf_vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
 
-vectors = tfidf_vectorizer .fit_transform(movies['tags']).toarray()
+vectors = tfidf_vectorizer.fit_transform(movies['tags']).toarray()
 
 
 similarity = cosine_similarity(vectors)
