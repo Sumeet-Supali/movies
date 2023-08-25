@@ -2,15 +2,12 @@ import streamlit as st
 import pickle
 import pandas as pd
 import requests
-
-
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 def fetch_poster(movie_id):
     response = requests.get('https://api.themoviedb.org/3/movie/{}?api_key=8265bd1679663a7ea12ac168da84d2e8&language=en-US%27'.format(movie_id))
     data = response.json()
-    #st.text(data)
     return "https://image.tmdb.org/t/p/w500/" + data['poster_path']
-
-#reco fun
 def recommend(movie):
     movie_index = movies[movies['title'] == movie].index[0]
     distance = similarity[movie_index]
@@ -30,11 +27,12 @@ def recommend(movie):
 movies_dict = pickle.load(open('movies_dict.pkl', 'rb'))
 movies = pd.DataFrame(movies_dict)
 
-from sklearn.feature_extraction.text import CountVectorizer
-cv = CountVectorizer(stop_words = 'english', max_features=5000)
-vectors = cv.fit_transform(movies['tags']).toarray()
 
-from sklearn.metrics.pairwise import cosine_similarity
+tfidf_vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
+
+vectors = tfidf_vectorizer .fit_transform(movies['tags']).toarray()
+
+
 similarity = cosine_similarity(vectors)
 
 st.title("MOVIE RECOMMENDER SYSTEM")
@@ -50,4 +48,3 @@ if st.button('recommend'):
         if i < len(reco):
             col.write(reco[i]['title'])
             col.image(reco[i]['poster_url'])
-
